@@ -73,4 +73,4 @@ An Android application developed using **Java** and **Android Studio** that help
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/expense-management-app.git
+   git clone https://github.com/nynnekakak/ProjectFinalMobile-.git
