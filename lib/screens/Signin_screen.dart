@@ -20,7 +20,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: "MoneyBoys", // đổi tiêu đề nếu muốn
+      title: "MoneyBoys",
       logoPath: 'assets/images/logo.jpg',
       showBackButton: false,
       body: Container(
@@ -116,8 +116,6 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Remember & Forgot
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[

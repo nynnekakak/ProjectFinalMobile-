@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppScaffold extends StatelessWidget {
-  final Widget body; // Nội dung phía dưới header
-  final String title; // Tiêu đề (MONEYBOYS)
-  final String logoPath; // Đường dẫn logo
-  final bool showBackButton; // Có hiện nút Back không
+  final Widget body;
+  final String title;
+  final String logoPath;
+  final bool showBackButton;
 
   const AppScaffold({
     super.key,
