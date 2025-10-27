@@ -31,11 +31,12 @@ class AppScaffold extends StatelessWidget {
                 )
               : null,
           flexibleSpace: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               const SizedBox(height: 20),
               Image.asset(logoPath, height: 60),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
                 title,
                 style: const TextStyle(

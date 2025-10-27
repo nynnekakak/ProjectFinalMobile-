@@ -24,6 +24,7 @@ class _SignInScreenState extends State<SignInScreen> {
       logoPath: 'assets/images/logo.jpg',
       showBackButton: false,
       body: Container(
+        margin: const EdgeInsets.all(16),
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         decoration: const BoxDecoration(
