@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:moneyboys/screens/Signin_screen.dart';
 import 'package:moneyboys/screens/flash_screen.dart';
 import 'package:moneyboys/screens/signup_screen.dart';
+import 'package:moneyboys/screens/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6F35A5)),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
+      home: const HomeScreen(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/signin': (context) => const SignInScreen(),
