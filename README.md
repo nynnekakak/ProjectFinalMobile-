@@ -30,7 +30,7 @@ An Android application developed using **Java** and **Android Studio** that help
 |------------|-------------|
 | **Language** | Java |
 | **IDE** | Android Studio |
-| **Database** | SQLite |
+| **Database** | SuperBase |
 | **Architecture** | MVC|
 | **UI Design** | XML Layouts |
 | **Version Control** | Git & GitHub |
@@ -63,9 +63,9 @@ An Android application developed using **Java** and **Android Studio** that help
 | Name | Role | Responsibility |
 |------|------|----------------|
 | [Trần Đăng Bảo Khương] | Team Leader / Developer | Overall project management, main coding |
-| [Trần Ngọc Tiến] | Backend / Database | SQLite, CRUD operations |
+| [Trần Ngọc Tiến] | Backend / Database | Superbase, CRUD operations |
 | [Trần Bảo Minh] | UI/UX Designer | Layouts, icons, user interface |
-| [Lê Trần Tuấn Hùng] | Tester / Documentation | Testing, report writing |
+| [Lê Trần Tuấn Hùng] | Tester / Documentation | Testing, Superbase |
 
 ---
 
