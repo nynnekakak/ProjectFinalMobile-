@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:moneyboys/screens/Signin_screen.dart';
+import 'package:moneyboys/app/config/app_router.dart';
 import 'package:moneyboys/screens/flash_screen.dart';
-import 'package:moneyboys/screens/signup_screen.dart';
-import 'package:moneyboys/screens/home_screen.dart';
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -20,12 +13,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6F35A5)),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
-      routes: {
-        '/signin': (context) => const SignInScreen(),
-        '/signup': (context) => const SignUpScreen(),
-      },
+      onGenerateRoute: AppRoute.onGenerateRoute,
     );
   }
 }

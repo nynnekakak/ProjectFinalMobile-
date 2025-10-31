@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/custom_scaffold.dart';
+import 'package:moneyboys/Shared/widgets/custom_scaffold.dart';
+import 'package:moneyboys/app/config/route-path.dart';
+
 import 'signin_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -165,11 +167,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacementNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const SignInScreen(),
-                          ),
+                          RoutePath.signIn,
                         );
                       },
                       child: const Text(

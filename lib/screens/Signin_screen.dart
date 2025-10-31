@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:moneyboys/Shared/widgets/custom_scaffold.dart';
+import 'package:moneyboys/app/config/route-path.dart';
 import 'package:moneyboys/screens/forgot_screen.dart';
-import '../widgets/custom_scaffold.dart';
+
 import '../screens/signup_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -161,7 +163,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, RoutePath.home);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFFD700),
                       shape: RoundedRectangleBorder(
@@ -191,11 +195,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacementNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const SignUpScreen(),
-                          ),
+                          RoutePath.signUp,
                         );
                       },
                       child: const Text(
