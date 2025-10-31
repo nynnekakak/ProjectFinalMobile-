@@ -30,7 +30,7 @@ An Android application developed using **Java** and **Android Studio** that help
 |------------|-------------|
 | **Language** | Java |
 | **IDE** | Android Studio |
-| **Database** | SQLite |
+| **Database** | SuperBase |
 | **Architecture** | MVC|
 | **UI Design** | XML Layouts |
 | **Version Control** | Git & GitHub |
