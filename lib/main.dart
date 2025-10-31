@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moneyboys/app/app_theme.dart';
 import 'package:moneyboys/screens/Signin_screen.dart';
 import 'package:moneyboys/screens/flash_screen.dart';
 import 'package:moneyboys/screens/signup_screen.dart';
@@ -16,10 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Finance Manager',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6F35A5)),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.darkAmber(),
       home: const HomeScreen(),
       debugShowCheckedModeBanner: false,
       routes: {

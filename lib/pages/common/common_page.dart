@@ -1,30 +1,29 @@
-// lib/screens/home_screen.dart
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import '../../core/utils/format.dart';
+import '../expenses/spending_list_page.dart';
+import '../budget/budget_page.dart';
+import '../stats/spending_chart_page.dart';
+import '../settings/setting_page.dart';
 
-import 'package:moneyboys/pages/expenses/spending_list_page.dart';
-import 'package:moneyboys/pages/budget/budget_page.dart';
-import 'package:moneyboys/pages/stats/spending_chart_page.dart';
-import 'package:moneyboys/pages/settings/setting_page.dart';
-
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class CommonPage extends StatefulWidget {
+  const CommonPage({super.key});
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<CommonPage> createState() => _CommonPageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _CommonPageState extends State<CommonPage> {
   final _bucket = PageStorageBucket();
   int _current = 0;
 
-  static const _titles = <String>[
+  static const _titles = [
     'Danh sách chi tiêu',
     'Ngân sách',
     'Thống kê',
     'Cài đặt',
   ];
 
-  final _pages = const <Widget>[
+  final _pages = const [
     SpendingListPage(key: PageStorageKey('spend_list')),
     BudgetPage(key: PageStorageKey('budget')),
     SpendingChartPage(key: PageStorageKey('stats')),
@@ -41,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: cs.primary,
         foregroundColor: cs.onPrimary,
         title: Text(_titles[_current]),
-        centerTitle: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
@@ -66,11 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: const Icon(CupertinoIcons.add, size: 28),
       ),
       bottomNavigationBar: BottomAppBar(
-        // Đồng bộ với AppTheme.darkAmber() (BottomAppBarThemeData)
         shape: const CircularNotchedRectangle(),
         notchMargin: 8,
         child: SizedBox(
-          height: 64, // Khớp với height trong BottomAppBarThemeData
+          height: 64,
           child: Row(
             children: [
               _buildTabItem(0, Icons.list_alt_outlined, Icons.list_alt),
