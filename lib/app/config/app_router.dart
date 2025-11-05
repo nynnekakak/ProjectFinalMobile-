@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:moneyboys/Modules/Home/View/Home_loading.dart';
+import 'package:moneyboys/Modules/Home/View/home_Screen.dart';
+import 'package:moneyboys/Modules/SignIn/View/Signin_screen.dart';
+import 'package:moneyboys/Modules/SignUp/View/signup_screen.dart';
+import 'package:moneyboys/Modules/flash_screen.dart';
 import 'package:moneyboys/app/config/route-path.dart';
-import 'package:moneyboys/screens/Home_loading.dart';
-import 'package:moneyboys/screens/flash_screen.dart';
-import 'package:moneyboys/screens/home_screen.dart';
-import 'package:moneyboys/screens/signin_screen.dart';
-import 'package:moneyboys/screens/signup_screen.dart';
 
 class AppRoute {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

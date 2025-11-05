@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:moneyboys/screens/home_screen.dart';
+
+import 'package:moneyboys/Modules/Home/View/home_Screen.dart';
 
 class Routes extends StatefulWidget {
   const Routes({super.key});
@@ -13,8 +14,8 @@ class RoutesState extends State<Routes> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
-    // ListSpendingPage(),
-    // BudgetPage(),
+    HomeScreen(),
+    // BudgetScreen(),
     // SpendingChartPage(),
     // SettingPage(),
   ];
