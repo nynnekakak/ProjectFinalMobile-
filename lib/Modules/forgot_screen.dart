@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moneyboys/screens/resetpassword_screen.dart';
+import 'package:moneyboys/Modules/resetpassword_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});

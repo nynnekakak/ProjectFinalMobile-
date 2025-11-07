@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moneyboys/screens/signin_screen.dart';
+import 'package:moneyboys/Modules/SignIn/View/Signin_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
