@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
+import 'package:moneyboys/Modules/Setting/widget/Custom_Manager.dart';
+import 'package:moneyboys/app/route.dart';
 import 'package:moneyboys/data/Models/user.dart';
+
 import 'package:moneyboys/data/services/user_preferences.dart';
 import 'package:moneyboys/data/services/user_service.dart';
 
@@ -72,7 +74,7 @@ class _PersonalProfilePageState extends State<PersonalProfilePage> {
               Navigator.pop(context);
               if (success) {
                 final commonState = context
-                    .findAncestorStateOfType<CommonPageState>();
+                    .findAncestorStateOfType<RoutesState>();
                 if (commonState != null) {
                   commonState.setState(() {
                     commonState.subPage = null;
