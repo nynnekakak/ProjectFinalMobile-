@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:moneyboys/Modules/Budget/budget_page.dart';
 
-import 'package:moneyboys/Modules/Home/View/home_Screen.dart';
+import 'package:moneyboys/Modules/Home/home_Screen.dart';
+import 'package:moneyboys/Modules/Setting/setting_page.dart';
+import 'package:moneyboys/Modules/monitor/spending_chart_page.dart';
 
 class Routes extends StatefulWidget {
   const Routes({super.key});
@@ -15,9 +18,9 @@ class RoutesState extends State<Routes> {
 
   final List<Widget> _pages = const [
     HomeScreen(),
-    // BudgetScreen(),
-    // SpendingChartPage(),
-    // SettingPage(),
+    BudgetScreen(),
+    SpendingChartPage(),
+    SettingPage(),
   ];
 
   Widget? subPage;
