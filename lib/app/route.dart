@@ -181,18 +181,19 @@ class RoutesState extends State<Routes> {
     final isSelected = _currentIndex == index;
     return GestureDetector(
       onTap: () => _onTabTapped(index),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+      child: SizedBox(
+        height: 200,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
+              size: 22,
               color: isSelected
                   ? const Color.fromARGB(255, 62, 54, 226)
                   : Colors.grey,
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
