@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'date': DateTime.now(),
       'note': 'Bữa trưa',
       'amount': 50000,
-      'isIncome': false
+      'isIncome': false,
     },
     {
       'icon': '💼',
@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'date': DateTime.now().subtract(const Duration(days: 1)),
       'note': 'Lương tháng 11',
       'amount': 10000000,
-      'isIncome': true
+      'isIncome': true,
     },
   ];
 
@@ -75,8 +75,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSummaryCard2(
-      double width, double height, String title, Color color,
-      {required VoidCallback onTap}) {
+    double width,
+    double height,
+    String title,
+    Color color, {
+    required VoidCallback onTap,
+  }) {
     final isBlue = color == const Color(0xFF0040FF);
     return GestureDetector(
       onTap: onTap,
@@ -98,12 +102,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.credit_card,
-                color: isBlue ? Colors.white : const Color(0xFF0040FF)),
+            Icon(
+              Icons.credit_card,
+              color: isBlue ? Colors.white : const Color(0xFF0040FF),
+            ),
             const SizedBox(height: 8),
-            Text(title,
-                style: TextStyle(
-                    color: isBlue ? Colors.white70 : Colors.grey[600]))
+            Text(
+              title,
+              style: TextStyle(
+                color: isBlue ? Colors.white70 : Colors.grey[600],
+              ),
+            ),
           ],
         ),
       ),
@@ -111,8 +120,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSummaryCard(
-      double width, double height, String title, double amount, Color color,
-      {required VoidCallback onTap}) {
+    double width,
+    double height,
+    String title,
+    double amount,
+    Color color, {
+    required VoidCallback onTap,
+  }) {
     final isBlue = color == const Color(0xFF0040FF);
     final formatter = NumberFormat("#,###", "en_US");
     final textAmount = formatter.format(amount);
@@ -136,20 +150,26 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.credit_card,
-                color: isBlue ? Colors.white : const Color(0xFF0040FF)),
+            Icon(
+              Icons.credit_card,
+              color: isBlue ? Colors.white : const Color(0xFF0040FF),
+            ),
             const SizedBox(height: 8),
             Text(
               textAmount,
               style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: isBlue ? Colors.white : const Color(0xFF111111)),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isBlue ? Colors.white : const Color(0xFF111111),
+              ),
             ),
             const SizedBox(height: 4),
-            Text(title,
-                style: TextStyle(
-                    color: isBlue ? Colors.white70 : Colors.grey[600]))
+            Text(
+              title,
+              style: TextStyle(
+                color: isBlue ? Colors.white70 : Colors.grey[600],
+              ),
+            ),
           ],
         ),
       ),
@@ -186,33 +206,36 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-              child: Text(
-                s['icon'],
-                style: const TextStyle(fontSize: 20),
-              ),
+              child: Text(s['icon'], style: const TextStyle(fontSize: 20)),
             ),
           ),
           title: Text(
             s['name'],
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Color(0xFF111111)),
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Color(0xFF111111),
+            ),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(DateFormat('dd MMM yyyy').format(s['date']),
-                  style: TextStyle(color: Colors.grey[600])),
-              Text(s['note'] ?? '',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[500]))
+              Text(
+                DateFormat('dd MMM yyyy').format(s['date']),
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              Text(
+                s['note'] ?? '',
+                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+              ),
             ],
           ),
           trailing: Text(
             "${isIncome ? '+' : '-'}\$${formatter.format(s['amount'])}",
             style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isIncome ? Colors.green : Colors.red[500]),
+              fontWeight: FontWeight.bold,
+              color: isIncome ? Colors.green : Colors.red[500],
+            ),
           ),
           onTap: () {},
         ),
@@ -247,9 +270,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               const Text(
                                 "Các giao dịch gần đây",
                                 style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF111111)),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF111111),
+                                ),
                               ),
                               const SizedBox(height: 12),
                               ...spendings.map(_buildSpendingItem),
@@ -257,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                   ),
-                )
+                ),
               ],
             );
           },

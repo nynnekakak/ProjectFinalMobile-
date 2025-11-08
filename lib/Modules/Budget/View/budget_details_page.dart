@@ -5,8 +5,9 @@ import 'package:moneyboys/data/Models/budget.dart';
 import 'package:moneyboys/data/Models/category.dart';
 import 'package:moneyboys/data/Models/spending.dart';
 import 'package:moneyboys/data/services/budget_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
+// bỏ supabase, sử dụng lại thì uncomment import dưới và _loadBudgetDetails
+// import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:moneyboys/data/mock/mock_data.dart';
 import '../widget/budget_line_chart.dart';
 import 'edit_budget_page.dart';
 
@@ -20,7 +21,7 @@ class BudgetDetailsPage extends StatefulWidget {
 }
 
 class _BudgetDetailsPageState extends State<BudgetDetailsPage> {
-  final supabase = Supabase.instance.client;
+  // final supabase = Supabase.instance.client;
   late Budget budgetData;
   late Category categoryData;
   List<Map<String, dynamic>> relatedSpendings = [];
@@ -33,50 +34,119 @@ class _BudgetDetailsPageState extends State<BudgetDetailsPage> {
     loadBudgetDetails();
   }
 
+  /// Map budget mock -> map cho Budget.fromMap (nếu model parse từ key gốc)
+  Map<String, dynamic> _budgetMapForModel(Map<String, dynamic> b) => {
+    'id': b['id'],
+    'user_id': b['user_id'],
+    'category_id': b['category_id'],
+    'amount': (b['amount'] as num).toDouble(),
+    'start_date': b['start_date'],
+    'end_date': b['end_date'],
+    'created_at': b['created_at'],
+  };
+
+  /// Map category mock -> map cho Category.fromMap
+  Map<String, dynamic> _categoryMapForModel(Map<String, dynamic> c) => {
+    'id': c['id'],
+    'name': c['name'],
+    'icon': c['icon'],
+  };
+
   Future<void> loadBudgetDetails() async {
     try {
-      final budgetResponse = await supabase
-          .from('budget')
-          .select()
-          .eq('id', widget.budgetId)
-          .single();
+      // 1) Lấy budget từ mock theo id
+      final b = mockBudgets.firstWhere((x) => x['id'] == widget.budgetId);
 
-      final categoryId = budgetResponse['category_id'];
-      final userId = budgetResponse['userid'];
-      final startDate = DateTime.parse(budgetResponse['start_date']);
-      final endDate = DateTime.parse(budgetResponse['end_date']);
+      final categoryId = b['category_id'] as String;
+      final userId = b['user_id'] as String;
+      final startDate = DateTime.parse(b['start_date'] as String);
+      final endDate = DateTime.parse(b['end_date'] as String);
 
-      final categoryResponse = await supabase
-          .from('category')
-          .select()
-          .eq('id', categoryId)
-          .single();
+      // 2) Lấy category từ mock
+      final c =
+          findCategory(categoryId) ??
+          {'id': categoryId, 'name': 'Unknown', 'icon': '❔'};
 
-      final spendingsResponse = await supabase
-          .from('spending')
-          .select()
-          .eq('userid', userId)
-          .eq('category_id', categoryId)
-          .gte('date', startDate.toIso8601String())
-          .lte('date', endDate.toIso8601String())
-          .order('date', ascending: false);
+      // 3) Lấy danh sách spending liên quan trong khoảng thời gian
+      final spends =
+          mockSpendings.where((s) {
+            final d = DateTime.parse(s['date'] as String);
+            return s['user_id'] == userId &&
+                s['category_id'] == categoryId &&
+                !d.isBefore(startDate) &&
+                !d.isAfter(endDate);
+          }).toList()..sort(
+            (a, b) => DateTime.parse(
+              b['date'] as String,
+            ).compareTo(DateTime.parse(a['date'] as String)),
+          ); // desc
 
-      double spent = 0;
-      for (var s in spendingsResponse) {
-        spent += s['amount'];
-      }
+      // 4) Tổng tiền đã chi
+      final spent = spends.fold<double>(
+        0.0,
+        (sum, s) => sum + (s['amount'] as num).toDouble(),
+      );
 
       setState(() {
-        budgetData = Budget.fromMap(budgetResponse);
-        categoryData = Category.fromMap(categoryResponse);
-        relatedSpendings = List<Map<String, dynamic>>.from(spendingsResponse);
+        budgetData = Budget.fromMap(_budgetMapForModel(b));
+        categoryData = Category.fromMap(_categoryMapForModel(c));
+        relatedSpendings = spends;
         totalSpent = spent;
         isLoading = false;
       });
     } catch (e) {
-      print('Error loading budget details: $e');
+      debugPrint('Error loading budget details (mock): $e');
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
+  // Future<void> loadBudgetDetails() async {
+  //   try {
+  //     final budgetResponse = await supabase
+  //         .from('budget')
+  //         .select()
+  //         .eq('id', widget.budgetId)
+  //         .single();
+
+  //     final categoryId = budgetResponse['category_id'];
+  //     final userId = budgetResponse['userid'];
+  //     final startDate = DateTime.parse(budgetResponse['start_date']);
+  //     final endDate = DateTime.parse(budgetResponse['end_date']);
+
+  //     final categoryResponse = await supabase
+  //         .from('category')
+  //         .select()
+  //         .eq('id', categoryId)
+  //         .single();
+
+  //     final spendingsResponse = await supabase
+  //         .from('spending')
+  //         .select()
+  //         .eq('userid', userId)
+  //         .eq('category_id', categoryId)
+  //         .gte('date', startDate.toIso8601String())
+  //         .lte('date', endDate.toIso8601String())
+  //         .order('date', ascending: false);
+
+  //     double spent = 0;
+  //     for (var s in spendingsResponse) {
+  //       spent += s['amount'];
+  //     }
+
+  //     setState(() {
+  //       budgetData = Budget.fromMap(budgetResponse);
+  //       categoryData = Category.fromMap(categoryResponse);
+  //       relatedSpendings = List<Map<String, dynamic>>.from(spendingsResponse);
+  //       totalSpent = spent;
+  //       isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     print('Error loading budget details: $e');
+  //   }
+  // }
 
   void _deleteBudget(String id) async {
     await BudgetService().deleteBudget(id);

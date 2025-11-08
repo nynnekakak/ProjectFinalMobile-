@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moneyboys/Modules/Budget/View/add_budget_page.dart';
 import 'package:moneyboys/data/services/user_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'budget_details_page.dart';
+import 'View/budget_details_page.dart';
+// bỏ supabase, sử dụng lại thì uncomment import dưới và _loadBudgets
+//import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:moneyboys/data/mock/mock_data.dart';
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
@@ -32,7 +34,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
   void initState() {
     super.initState();
     _initializeDateRange();
-    _loadBudgets();
+    _loadBudgets(_startDate, _endDate);
   }
 
   void _initializeDateRange() {
@@ -52,71 +54,117 @@ class _BudgetScreenState extends State<BudgetScreen> {
     }
   }
 
-  Future<void> _loadBudgets() async {
+  Future<void> _loadBudgets(DateTime start, DateTime end) async {
     setState(() {
       _isLoading = true;
     });
 
-    userId = await UserPreferences().getUserId();
-    if (userId == null) return;
-
-    final supabase = Supabase.instance.client;
-
-    // Lấy danh sách budget kèm category trong khoảng thời gian được chọn
-    final budgetResponse = await supabase
-        .from('budget')
-        .select('*, category(*)')
-        .eq('userid', userId!)
-        .lte('start_date', _endDate.toIso8601String()) // Điều kiện giao nhau
-        .gte('end_date', _startDate.toIso8601String()) // Điều kiện giao nhau
-        .order('created_at', ascending: false);
-
-    final List<Map<String, dynamic>> budgetWithSpending = [];
+    // Lọc mockBudgets theo khoảng thời gian giao nhau với [start, end]
+    final List<Map<String, dynamic>> items = [];
     double totalBudget = 0;
     double totalSpent = 0;
 
-    for (final budget in budgetResponse) {
-      final budgetId = budget['id'];
-      final categoryId = budget['category_id'];
-      final budgetAmount = (budget['amount'] as num).toDouble();
-      final budgetStartDate = DateTime.parse(budget['start_date']);
-      final budgetEndDate = DateTime.parse(budget['end_date']);
+    for (final b in mockBudgets) {
+      final s = DateTime.parse(b['start_date']);
+      final e = DateTime.parse(b['end_date']);
 
-      // Lấy tổng chi tiêu theo category trong khoảng thời gian của budget
-      final spendingSumResponse = await supabase
-          .from('spending')
-          .select('amount')
-          .eq('userid', userId!)
-          .eq('category_id', categoryId)
-          .gte('date', budgetStartDate.toIso8601String())
-          .lte('date', budgetEndDate.toIso8601String());
+      // Bỏ qua nếu không giao khoảng
+      if (e.isBefore(start) || s.isAfter(end)) continue;
 
-      double spent = 0;
-      for (final row in spendingSumResponse) {
-        spent += (row['amount'] as num).toDouble();
-      }
+      final cat = findCategory(b['category_id']) ?? {};
+      final amount = (b['amount'] as num).toDouble();
 
-      budgetWithSpending.add({
-        'budget_id': budgetId,
-        'budget': budget,
-        'category': budget['category'],
-        'amount': spent,
-        'start_date': budgetStartDate,
-        'end_date': budgetEndDate,
+      // Tổng chi trong khoảng của từng budget (theo category của budget đó)
+      final spent = sumSpendingsFor(b['category_id'], s, e);
+
+      items.add({
+        'budget_id': b['id'],
+        'budget': b, // map gốc của budget (chứa amount/start_date/end_date)
+        'category': cat, // map danh mục {id,name,icon}
+        'amount':
+            spent, // field cũ đặt tên là 'amount' = đã chi (để hợp với UI hiện tại)
+        'start_date': s,
+        'end_date': e,
       });
 
-      totalBudget += budgetAmount;
+      totalBudget += amount;
       totalSpent += spent;
     }
 
     setState(() {
-      _budgetList = budgetWithSpending;
+      _budgetList = items;
       _totalBudget = totalBudget;
       _totalSpent = totalSpent;
       _remainingAmount = totalBudget - totalSpent;
       _isLoading = false;
     });
   }
+
+  // Future<void> _loadBudgets() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+
+  //   userId = await UserPreferences().getUserId();
+  //   if (userId == null) return;
+
+  //   final supabase = Supabase.instance.client;
+
+  //   // Lấy danh sách budget kèm category trong khoảng thời gian được chọn
+  //   final budgetResponse = await supabase
+  //       .from('budget')
+  //       .select('*, category(*)')
+  //       .eq('userid', userId!)
+  //       .lte('start_date', _endDate.toIso8601String()) // Điều kiện giao nhau
+  //       .gte('end_date', _startDate.toIso8601String()) // Điều kiện giao nhau
+  //       .order('created_at', ascending: false);
+
+  //   final List<Map<String, dynamic>> budgetWithSpending = [];
+  //   double totalBudget = 0;
+  //   double totalSpent = 0;
+
+  //   for (final budget in budgetResponse) {
+  //     final budgetId = budget['id'];
+  //     final categoryId = budget['category_id'];
+  //     final budgetAmount = (budget['amount'] as num).toDouble();
+  //     final budgetStartDate = DateTime.parse(budget['start_date']);
+  //     final budgetEndDate = DateTime.parse(budget['end_date']);
+
+  //     // Lấy tổng chi tiêu theo category trong khoảng thời gian của budget
+  //     final spendingSumResponse = await supabase
+  //         .from('spending')
+  //         .select('amount')
+  //         .eq('userid', userId!)
+  //         .eq('category_id', categoryId)
+  //         .gte('date', budgetStartDate.toIso8601String())
+  //         .lte('date', budgetEndDate.toIso8601String());
+
+  //     double spent = 0;
+  //     for (final row in spendingSumResponse) {
+  //       spent += (row['amount'] as num).toDouble();
+  //     }
+
+  //     budgetWithSpending.add({
+  //       'budget_id': budgetId,
+  //       'budget': budget,
+  //       'category': budget['category'],
+  //       'amount': spent,
+  //       'start_date': budgetStartDate,
+  //       'end_date': budgetEndDate,
+  //     });
+
+  //     totalBudget += budgetAmount;
+  //     totalSpent += spent;
+  //   }
+
+  //   setState(() {
+  //     _budgetList = budgetWithSpending;
+  //     _totalBudget = totalBudget;
+  //     _totalSpent = totalSpent;
+  //     _remainingAmount = totalBudget - totalSpent;
+  //     _isLoading = false;
+  //   });
+  // }
 
   Future<void> _showDateRangePicker() async {
     final primaryBlue = const Color(0xFF0040FF);
@@ -168,7 +216,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
             '${DateFormat('dd/MM/yyyy').format(_startDate)} - ${DateFormat('dd/MM/yyyy').format(_endDate)}';
       });
       _calculateDaysLeft();
-      _loadBudgets();
+      _loadBudgets(_startDate, _endDate);
     }
   }
 
@@ -180,7 +228,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
       _selectedPeriod = 'Tháng này';
     });
     _calculateDaysLeft();
-    _loadBudgets();
+    _loadBudgets(_startDate, _endDate);
   }
 
   @override
@@ -355,7 +403,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                             ),
                           );
                           if (result == true) {
-                            _loadBudgets();
+                            _loadBudgets(_startDate, _endDate);
                           }
                         },
                         style: TextButton.styleFrom(
@@ -418,7 +466,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                                     ),
                                   );
                                   if (result == true) {
-                                    _loadBudgets();
+                                    _loadBudgets(_startDate, _endDate);
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -538,7 +586,10 @@ class _BudgetScreenState extends State<BudgetScreen> {
             builder: (context) => BudgetDetailsPage(budgetId: id),
           ),
         );
-        _loadBudgets(); // Refresh when returning from details
+        _loadBudgets(
+          _startDate,
+          _endDate,
+        ); // Refresh when returning from details
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),

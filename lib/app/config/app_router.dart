@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:moneyboys/Modules/Home/View/Home_loading.dart';
-import 'package:moneyboys/Modules/Home/View/home_Screen.dart';
+import 'package:moneyboys/Modules/Home/Home_loading.dart';
+import 'package:moneyboys/Modules/Home/home_Screen.dart';
 import 'package:moneyboys/Modules/SignIn/View/Signin_screen.dart';
 import 'package:moneyboys/Modules/SignUp/View/signup_screen.dart';
 import 'package:moneyboys/Modules/flash_screen.dart';
