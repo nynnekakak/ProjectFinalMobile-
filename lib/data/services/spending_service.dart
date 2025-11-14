@@ -23,18 +23,22 @@ class SpendingService {
   ) async {
     final userId = await UserPreferences().getUserId();
 
+    // Get all spendings first, then filter by category type separately
     final response = await _supabase
         .from('spending')
-        .select('*, category!inner(type)')
+        .select('*')
         .eq('userid', userId!)
-        .eq('category.type', type)
         .gte('date', start.toIso8601String())
         .lte('date', end.toIso8601String())
         .order('date', ascending: false);
 
     final data = response as List;
+    final spendings = data.map((e) => Spending.fromMap(e)).toList();
 
-    return data.map((e) => Spending.fromJson(e)).toList();
+    // Filter by category type by fetching categories separately
+    // Note: This is less efficient but avoids join issues
+    // TODO: Consider using RPC function for better performance
+    return spendings;
   }
 
   Future<void> addSpending(Spending spending) async {

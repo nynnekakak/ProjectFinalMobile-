@@ -34,7 +34,7 @@ class _BudgetDetailsPageState extends State<BudgetDetailsPage> {
   /// Map budget mock -> map cho Budget.fromMap (nếu model parse từ key gốc)
   Map<String, dynamic> _budgetMapForModel(Map<String, dynamic> b) => {
     'id': b['id'],
-    'user_id': b['user_id'],
+    'userid': b['userid'],
     'category_id': b['category_id'],
     'amount': (b['amount'] as num).toDouble(),
     'start_date': b['start_date'],
@@ -62,17 +62,20 @@ class _BudgetDetailsPageState extends State<BudgetDetailsPage> {
       final startDate = DateTime.parse(budgetResponse['start_date']);
       final endDate = DateTime.parse(budgetResponse['end_date']);
 
+      // Parse categoryId to int if needed
+      final categoryIdParsed =
+          int.tryParse(categoryId.toString()) ?? categoryId;
       final categoryResponse = await supabase
           .from('category')
           .select()
-          .eq('id', categoryId)
+          .eq('id', categoryIdParsed)
           .single();
 
       final spendingsResponse = await supabase
           .from('spending')
           .select()
           .eq('userid', userId)
-          .eq('category_id', categoryId)
+          .eq('category_id', categoryIdParsed)
           .gte('date', startDate.toIso8601String())
           .lte('date', endDate.toIso8601String())
           .order('date', ascending: false);

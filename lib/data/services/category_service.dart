@@ -36,7 +36,7 @@ class CategoryService {
     return null;
   }
 
-  Future<void> addCategory(Category category) async {
+  Future<void> addCategory(CategoryInsert category) async {
     await _supabase.from(_table).insert(category.toMap());
   }
 

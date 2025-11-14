@@ -62,13 +62,13 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
     final supabase = Supabase.instance.client;
 
-    // Lấy danh sách budget kèm category trong khoảng thời gian được chọn
+    // Lấy danh sách budget trong khoảng thời gian được chọn
     final budgetResponse = await supabase
         .from('budget')
-        .select('*, category(*)')
+        .select('*')
         .eq('userid', userId!)
-        .lte('start_date', _endDate.toIso8601String()) // Điều kiện giao nhau
-        .gte('end_date', _startDate.toIso8601String()) // Điều kiện giao nhau
+        .lte('start_date', _endDate.toIso8601String())
+        .gte('end_date', _startDate.toIso8601String())
         .order('created_at', ascending: false);
 
     final List<Map<String, dynamic>> budgetWithSpending = [];
@@ -82,12 +82,22 @@ class _BudgetScreenState extends State<BudgetScreen> {
       final budgetStartDate = DateTime.parse(budget['start_date']);
       final budgetEndDate = DateTime.parse(budget['end_date']);
 
+      // Lấy thông tin category riêng
+      // Parse categoryId to int if it's stored as integer in DB
+      final categoryIdParsed =
+          int.tryParse(categoryId.toString()) ?? categoryId;
+      final category = await supabase
+          .from('category')
+          .select('*')
+          .eq('id', categoryIdParsed)
+          .single();
+
       // Lấy tổng chi tiêu theo category trong khoảng thời gian của budget
       final spendingSumResponse = await supabase
           .from('spending')
           .select('amount')
           .eq('userid', userId!)
-          .eq('category_id', categoryId)
+          .eq('category_id', categoryIdParsed)
           .gte('date', budgetStartDate.toIso8601String())
           .lte('date', budgetEndDate.toIso8601String());
 
@@ -99,7 +109,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
       budgetWithSpending.add({
         'budget_id': budgetId,
         'budget': budget,
-        'category': budget['category'],
+        'category': category,
         'amount': spent,
         'start_date': budgetStartDate,
         'end_date': budgetEndDate,

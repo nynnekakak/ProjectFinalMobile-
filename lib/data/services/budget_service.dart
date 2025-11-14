@@ -11,7 +11,7 @@ class BudgetService {
 
     final response = await _supabase
         .from('budget')
-        .select('*, category(*)')
+        .select('*')
         .eq('userid', userId!)
         .order('start_date');
 
