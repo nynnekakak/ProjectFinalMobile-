@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:moneyboys/data/models/user.dart';
+import 'package:moneyboys/data/Models/user.dart';
 import 'package:moneyboys/data/services/user_preferences.dart';
 import 'package:moneyboys/data/services/user_service.dart';
 import 'package:moneyboys/Modules/Setting/View/list_category_page.dart';

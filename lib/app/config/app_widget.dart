@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moneyboys/Modules/SignIn/View/Signin_screen.dart';
 
 import 'package:moneyboys/app/app_theme.dart';
 import 'package:moneyboys/app/config/app_router.dart';
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Finance Manager',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkAmber(),
-      home: const Routes(),
+      home: const SignInScreen(),
       onGenerateRoute: AppRoute.onGenerateRoute,
     );
   }

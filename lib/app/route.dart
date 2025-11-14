@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:moneyboys/Modules/Budget/budget_page.dart';
-
 import 'package:moneyboys/Modules/Home/home_Screen.dart';
 import 'package:moneyboys/Modules/Setting/setting_page.dart';
+import 'package:moneyboys/Modules/expense/add_spending_page.dart';
 import 'package:moneyboys/Modules/monitor/spending_chart_page.dart';
 
 class Routes extends StatefulWidget {
@@ -75,33 +75,24 @@ class RoutesState extends State<Routes> {
           ),
         ),
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                physics: const NeverScrollableScrollPhysics(),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Center(
-                      child: Container(
-                        constraints: const BoxConstraints(maxWidth: 430),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          transitionBuilder: (child, animation) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            );
-                          },
-                          child: subPage ?? _pages[_currentIndex],
-                        ),
-                      ),
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 430),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      child: subPage ?? _pages[_currentIndex],
                     ),
                   ),
-                ),
-              );
-            },
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -111,7 +102,7 @@ class RoutesState extends State<Routes> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              MaterialPageRoute(builder: (_) => const AddSpendingPage()),
             );
           },
           backgroundColor: const Color.fromARGB(255, 62, 54, 226),
@@ -123,50 +114,55 @@ class RoutesState extends State<Routes> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        color: Colors.white,
-        elevation: 10,
-        clipBehavior: Clip.antiAlias,
-        child: Container(
-          height: 60,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, -2),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 8,
+          color: Colors.white,
+          elevation: 10,
+          clipBehavior: Clip.antiAlias,
+          child: Container(
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
               ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildTabItem(
-                icon: CupertinoIcons.square_list_fill,
-                index: 0,
-                label: 'Danh sách',
-              ),
-              _buildTabItem(
-                icon: CupertinoIcons.money_rubl_circle_fill,
-                index: 1,
-                label: 'Ngân sách',
-              ),
-              const SizedBox(width: 48),
-              _buildTabItem(
-                icon: CupertinoIcons.chart_bar_alt_fill,
-                index: 2,
-                label: 'Thống kê',
-              ),
-              _buildTabItem(
-                icon: CupertinoIcons.gear_solid,
-                index: 3,
-                label: 'Cài đặt',
-              ),
-            ],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildTabItem(
+                  icon: CupertinoIcons.square_list_fill,
+                  index: 0,
+                  label: 'Danh sách',
+                ),
+                _buildTabItem(
+                  icon: CupertinoIcons.money_rubl_circle_fill,
+                  index: 1,
+                  label: 'Ngân sách',
+                ),
+                const SizedBox(width: 48), // khoảng trống cho FAB
+                _buildTabItem(
+                  icon: CupertinoIcons.chart_bar_alt_fill,
+                  index: 2,
+                  label: 'Thống kê',
+                ),
+                _buildTabItem(
+                  icon: CupertinoIcons.gear_solid,
+                  index: 3,
+                  label: 'Cài đặt',
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -182,17 +178,18 @@ class RoutesState extends State<Routes> {
     return GestureDetector(
       onTap: () => _onTabTapped(index),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
+              size: 22,
               icon,
               color: isSelected
                   ? const Color.fromARGB(255, 62, 54, 226)
                   : Colors.grey,
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
