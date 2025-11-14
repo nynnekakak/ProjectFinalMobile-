@@ -73,15 +73,25 @@ class _SignInViewState extends State<SignInView> {
       },
       child: AppScaffold(
         title: "MoneyBoys",
-        logoPath: 'assets/images/logo.jpg',
+
         showBackButton: false,
         body: Container(
           margin: const EdgeInsets.all(16),
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          decoration: const BoxDecoration(
-            color: Color(0xFF1A1A1A),
-            borderRadius: BorderRadius.all(Radius.circular(30)),
+          decoration: BoxDecoration(
+            color:
+                Colors.grey[100], // Thay đổi nền thành màu xám nhạt (trắng xám)
+            borderRadius: const BorderRadius.all(Radius.circular(30)),
+            border: Border.all(
+              color: const Color.fromARGB(
+                255,
+                10,
+                127,
+                223,
+              ), // Màu viền xanh nhạt
+              width: 1.5, // Độ dày của viền
+            ),
           ),
           child: SingleChildScrollView(
             child: Form(
@@ -90,12 +100,13 @@ class _SignInViewState extends State<SignInView> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     'Sign In',
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFFFD700),
+                      color: Colors
+                          .blue[800], // Thay đổi màu chữ thành xanh đậm để hài hòa
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -104,7 +115,9 @@ class _SignInViewState extends State<SignInView> {
                   // Email Field
                   TextFormField(
                     controller: _emailController,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.black,
+                    ), // Thay đổi màu chữ thành xanh
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
@@ -118,33 +131,42 @@ class _SignInViewState extends State<SignInView> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      labelStyle: const TextStyle(color: Colors.white70),
+                      labelStyle: TextStyle(
+                        color: Colors.blue[600],
+                      ), // Thay đổi màu label thành xanh nhạt
                       filled: true,
-                      fillColor: const Color(0xFF2B2B2B),
+                      fillColor: Colors
+                          .grey[200], // Thay đổi fillColor thành xám nhạt để hài hòa
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(color: Color(0xFFFFD700)),
+                        borderSide: BorderSide(
+                          color: Colors.blue[300]!,
+                        ), // Thay đổi viền thành xanh nhạt
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(color: Colors.white30),
+                        borderSide: BorderSide(
+                          color: Colors.blue[300]!,
+                        ), // Thay đổi viền enabled thành xanh nhạt
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFFFD700),
+                        borderSide: BorderSide(
+                          color: Colors
+                              .blue[600]!, // Thay đổi viền focused thành xanh đậm
                           width: 2,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   // Password Field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.black,
+                    ), // Thay đổi màu chữ thành xanh
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
@@ -156,9 +178,12 @@ class _SignInViewState extends State<SignInView> {
                     },
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      labelStyle: const TextStyle(color: Colors.white70),
+                      labelStyle: TextStyle(
+                        color: Colors.blue[600],
+                      ), // Thay đổi màu label thành xanh nhạt
                       filled: true,
-                      fillColor: const Color(0xFF2B2B2B),
+                      fillColor: Colors
+                          .grey[200], // Thay đổi fillColor thành xám nhạt để hài hòa
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
@@ -169,7 +194,8 @@ class _SignInViewState extends State<SignInView> {
                           _isPasswordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: Colors.white70,
+                          color: Colors
+                              .blue[600], // Thay đổi màu icon thành xanh nhạt
                         ),
                       ),
                       border: OutlineInputBorder(
@@ -177,12 +203,15 @@ class _SignInViewState extends State<SignInView> {
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(color: Colors.white30),
+                        borderSide: BorderSide(
+                          color: Colors.blue[300]!,
+                        ), // Thay đổi viền enabled thành xanh nhạt
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFFFD700),
+                        borderSide: BorderSide(
+                          color: Colors
+                              .blue[600]!, // Thay đổi viền focused thành xanh đậm
                           width: 2,
                         ),
                       ),
@@ -197,15 +226,18 @@ class _SignInViewState extends State<SignInView> {
                       Row(
                         children: <Widget>[
                           Checkbox(
-                            activeColor: const Color(0xFFFFD700),
+                            activeColor: Colors
+                                .blue[600], // Thay đổi màu checkbox thành xanh
                             value: _rememberPassword,
                             onChanged: (val) {
                               setState(() => _rememberPassword = val!);
                             },
                           ),
-                          const Text(
+                          Text(
                             'Remember me',
-                            style: TextStyle(color: Colors.white70),
+                            style: TextStyle(
+                              color: Colors.blue[700],
+                            ), // Thay đổi màu text thành xanh
                           ),
                         ],
                       ),
@@ -221,7 +253,8 @@ class _SignInViewState extends State<SignInView> {
                         child: Text(
                           'Forgot Password?',
                           style: TextStyle(
-                            color: Colors.blue.shade300,
+                            color: Colors
+                                .blue[800], // Thay đổi màu text thành xanh đậm
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -241,7 +274,8 @@ class _SignInViewState extends State<SignInView> {
                         child: ElevatedButton(
                           onPressed: isLoading ? null : _handleSignIn,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFD700),
+                            backgroundColor: Colors
+                                .blue[600], // Thay đổi màu button thành xanh để hài hòa với theme
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -253,14 +287,16 @@ class _SignInViewState extends State<SignInView> {
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.black,
+                                      Colors
+                                          .white, // Giữ màu trắng cho indicator
                                     ),
                                   ),
                                 )
-                              : const Text(
+                              : Text(
                                   'Sign In',
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors
+                                        .white, // Giữ màu trắng cho text button
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -276,9 +312,11 @@ class _SignInViewState extends State<SignInView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         "Don't have an account? ",
-                        style: TextStyle(color: Colors.white70),
+                        style: TextStyle(
+                          color: Colors.blue[700],
+                        ), // Thay đổi màu text thành xanh
                       ),
                       GestureDetector(
                         onTap: () {
@@ -287,10 +325,11 @@ class _SignInViewState extends State<SignInView> {
                             RoutePath.signUp,
                           );
                         },
-                        child: const Text(
+                        child: Text(
                           "Sign Up",
                           style: TextStyle(
-                            color: Color(0xFFFFD700),
+                            color: Colors
+                                .blue[800], // Thay đổi màu text thành xanh đậm
                             fontWeight: FontWeight.bold,
                           ),
                         ),

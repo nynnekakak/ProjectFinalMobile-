@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:moneyboys/data/mock/mock_data.dart';
+
 //bỏ supabase, sử dụng lại thì uncomment import dưới và _loadUserInfo
-//import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -20,18 +20,14 @@ class _UserPageState extends State<UserPage> {
   }
 
   Future<void> _loadUserInfo() async {
-    // final supabase = Supabase.instance.client;
-    // final userInfo = await supabase
-    //     .from('user')
-    //     .select()
-    //     .limit(1)
-    //     .maybeSingle();
+    final supabase = Supabase.instance.client;
+    final userInfo = await supabase
+        .from('user')
+        .select()
+        .limit(1)
+        .maybeSingle();
 
-    // setState(() => _user = userInfo);
-    final userInfo = [mockUser];
-    setState(() {
-      _user = userInfo.first;
-    });
+    setState(() => _user = userInfo);
   }
 
   @override

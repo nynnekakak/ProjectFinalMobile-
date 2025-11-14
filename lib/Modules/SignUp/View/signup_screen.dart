@@ -77,7 +77,7 @@ class _SignUpViewState extends State<SignUpView> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Email already exists'),
-              backgroundColor: Colors.orange,
+              backgroundColor: Colors.red,
             ),
           );
         } else if (state is SignUpFailure) {
@@ -89,24 +89,31 @@ class _SignUpViewState extends State<SignUpView> {
           );
         } else if (state is SignUpValidationError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.orange,
-            ),
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
       },
       child: AppScaffold(
         title: "MoneyBoys",
-        logoPath: 'assets/images/logo.jpg',
+
         showBackButton: false,
+
+        // Thêm màu nền cho AppScaffold (nếu nó là CustomScaffold)
+        // body của _SignUpViewState.build()
         body: Container(
           margin: const EdgeInsets.all(16),
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          decoration: const BoxDecoration(
-            color: Color(0xFF1A1A1A),
-            borderRadius: BorderRadius.all(Radius.circular(30)),
+          decoration: BoxDecoration(
+            // Bỏ const để dùng BoxDecoration
+            // Nền form: TRẮNG XÁM NHẠT (đồng bộ với nền field)
+            color: Colors.grey[100],
+            borderRadius: const BorderRadius.all(Radius.circular(30)),
+            // VIỀN XANH ĐẬM (đồng bộ với màn hình Đăng nhập)
+            border: Border.all(
+              color: const Color.fromARGB(255, 10, 127, 223),
+              width: 1.5,
+            ),
           ),
           child: SingleChildScrollView(
             child: Form(
@@ -115,12 +122,14 @@ class _SignUpViewState extends State<SignUpView> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
+                    // Bỏ const vì đang dùng biến màu
                     'Sign Up',
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFFFD700),
+                      // Tiêu đề màu XANH ĐẬM
+                      color: Colors.blue[800],
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -129,7 +138,8 @@ class _SignUpViewState extends State<SignUpView> {
                   // Full Name
                   TextFormField(
                     controller: _nameController,
-                    style: const TextStyle(color: Colors.white),
+                    // Chữ nhập vào màu ĐEN
+                    style: const TextStyle(color: Colors.black),
                     validator: context.read<SignUpCubit>().validateName,
                     decoration: _inputDecoration('Full Name'),
                   ),
@@ -138,7 +148,8 @@ class _SignUpViewState extends State<SignUpView> {
                   // Email
                   TextFormField(
                     controller: _emailController,
-                    style: const TextStyle(color: Colors.white),
+                    // Chữ nhập vào màu ĐEN
+                    style: const TextStyle(color: Colors.black),
                     validator: context.read<SignUpCubit>().validateEmail,
                     decoration: _inputDecoration('Email'),
                   ),
@@ -148,7 +159,8 @@ class _SignUpViewState extends State<SignUpView> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
-                    style: const TextStyle(color: Colors.white),
+                    // Chữ nhập vào màu ĐEN
+                    style: const TextStyle(color: Colors.black),
                     validator: context.read<SignUpCubit>().validatePassword,
                     decoration: _inputDecoration('Password').copyWith(
                       suffixIcon: IconButton(
@@ -161,7 +173,8 @@ class _SignUpViewState extends State<SignUpView> {
                           _isPasswordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: Colors.white70,
+
+                          color: Colors.blue.shade600,
                         ),
                       ),
                     ),
@@ -172,16 +185,18 @@ class _SignUpViewState extends State<SignUpView> {
                   Row(
                     children: [
                       Checkbox(
-                        activeColor: const Color(0xFFFFD700),
+                        activeColor: Colors.blue.shade600,
                         value: _agreePersonalData,
                         onChanged: (val) {
                           setState(() => _agreePersonalData = val!);
                         },
                       ),
-                      const Expanded(
+                      Expanded(
+                        // Bỏ const
                         child: Text(
                           'I agree to the processing of personal data',
-                          style: TextStyle(color: Colors.white70),
+
+                          style: TextStyle(color: Colors.blue[700]),
                         ),
                       ),
                     ],
@@ -199,7 +214,8 @@ class _SignUpViewState extends State<SignUpView> {
                         child: ElevatedButton(
                           onPressed: isLoading ? null : _handleSignUp,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFD700),
+                            // Nút màu XANH TRUNG BÌNH
+                            backgroundColor: Colors.blue.shade600,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -211,14 +227,14 @@ class _SignUpViewState extends State<SignUpView> {
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.black,
+                                      Colors.black, // Indicator màu TRẮNG
                                     ),
                                   ),
                                 )
                               : const Text(
                                   'Sign Up',
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.black, // Chữ nút màu TRẮNG
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -233,9 +249,11 @@ class _SignUpViewState extends State<SignUpView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
+                        // Bỏ const
                         'Already have an account? ',
-                        style: TextStyle(color: Colors.white70),
+                        // Chữ màu XANH NHẠT
+                        style: TextStyle(color: Colors.blue[700]),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -244,10 +262,12 @@ class _SignUpViewState extends State<SignUpView> {
                             RoutePath.signIn,
                           );
                         },
-                        child: const Text(
+                        child: Text(
+                          // Bỏ const
                           'Sign in',
                           style: TextStyle(
-                            color: Color(0xFFFFD700),
+                            // Link màu XANH ĐẬM
+                            color: Colors.blue.shade800,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -267,20 +287,23 @@ class _SignUpViewState extends State<SignUpView> {
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: Colors.white70),
+      labelStyle: const TextStyle(color: Colors.black54),
       filled: true,
-      fillColor: const Color(0xFF2B2B2B),
+      fillColor: Colors.grey[200],
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: const BorderSide(color: Color(0xFFFFD700)),
+        borderSide: const BorderSide(color: Color.fromARGB(255, 235, 154, 4)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: const BorderSide(color: Colors.white30),
+        borderSide: const BorderSide(color: Color.fromARGB(255, 8, 97, 198)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: const BorderSide(color: Color(0xFFFFD700), width: 2),
+        borderSide: const BorderSide(
+          color: Color.fromARGB(255, 235, 154, 4),
+          width: 5,
+        ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),

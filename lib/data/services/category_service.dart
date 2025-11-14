@@ -17,11 +17,7 @@ class CategoryService {
   }
 
   Future<List<Category>> getAllCategories(String userId) async {
-    final response = await _supabase
-        .from(_table)
-        .select()
-        .or('is_shared.eq.true,userid.eq.$userId')
-        .order('created_at');
+    final response = await _supabase.from(_table).select().order('created_at');
     return (response as List)
         .map((e) => Category.fromMap(e as Map<String, dynamic>))
         .toList();

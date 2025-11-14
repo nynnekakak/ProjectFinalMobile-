@@ -14,6 +14,10 @@ class ListCategoryPage extends StatefulWidget {
   State<ListCategoryPage> createState() => _ListCategoryPageState();
 }
 
+// Lưu ý: Tôi giả định class RoutesState được định nghĩa ở đâu đó
+// để hỗ trợ logic quản lý subPage
+// class RoutesState extends State<Routes> { ... }
+
 class _ListCategoryPageState extends State<ListCategoryPage> {
   List<Category> _categories = [];
   final primaryBlue = const Color(0xFF0040FF);
@@ -25,29 +29,41 @@ class _ListCategoryPageState extends State<ListCategoryPage> {
     _loadCategories();
   }
 
+  // ⭐ SỬA LỖI 1: Thêm kiểm tra 'mounted' trước khi gọi setState()
   Future<void> _loadCategories() async {
     final userId = await UserPreferences().getUserId();
     final result = await CategoryService().getAllCategories(userId!);
-    setState(() {
-      _categories = result;
-    });
+
+    if (mounted) {
+      // Kiểm tra: Widget còn được gắn vào cây không?
+      setState(() {
+        _categories = result;
+      });
+    }
   }
 
+  // ⭐ SỬA LỖI 2: Thêm kiểm tra 'mounted' trước khi hiển thị SnackBar
   Future<void> _deleteCategory(String id) async {
     Category? cate = await CategoryService().getCategoryById(id);
+
     if (cate!.isShared == false) {
       await CategoryService().deleteCategory(id);
       await _loadCategories();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Danh mục này không thể xóa!'),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
+      if (mounted) {
+        // Kiểm tra trước khi dùng context (để hiển thị SnackBar)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Danh mục này không thể xóa!'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
     }
   }
 
+  // Sửa lỗi logic: Bỏ _loadCategories() ở đây vì nó sẽ bị gọi khi quay lại màn hình
+  // (Nếu _loadCategories() vẫn ở đây, nó sẽ chạy trong nền và gây ra lỗi)
   void _goToAddCategory() async {
     final commonState = context.findAncestorStateOfType<RoutesState>();
     commonState?.setState(() {
@@ -55,7 +71,7 @@ class _ListCategoryPageState extends State<ListCategoryPage> {
       commonState.subPage = const AddCategoryPage();
     });
 
-    _loadCategories();
+    // BỎ: _loadCategories(); // đã gây lỗi khi chạy sau khi điều hướng đi
   }
 
   @override
@@ -75,6 +91,11 @@ class _ListCategoryPageState extends State<ListCategoryPage> {
                 } else {
                   commonState.subPage = null;
                 }
+                // ⭐ GỢI Ý: Gọi _loadCategories() khi quay lại màn hình chính ⭐
+                // Nếu logic chuyển trang này đưa bạn quay về màn hình chính
+                // và ListCategoryPage được khởi tạo lại, thì không cần dòng này.
+                // Nếu ListCategoryPage vẫn là subPage và bạn muốn nó load lại,
+                // thì bạn cần một cơ chế khác, ví dụ: truyền callback.
               });
             }
           },
@@ -198,7 +219,6 @@ class _ListCategoryPageState extends State<ListCategoryPage> {
           ),
         ),
       ),
-      // Đã bỏ FloatingActionButton ở đây
     );
   }
 }
