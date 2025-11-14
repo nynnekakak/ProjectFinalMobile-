@@ -19,9 +19,9 @@ class Spending {
 
   factory Spending.fromMap(Map<String, dynamic> map) {
     return Spending(
-      id: map['id'],
-      userId: map['userid'],
-      categoryId: map['category_id'],
+      id: map['id'].toString(),
+      userId: map['userid'].toString(),
+      categoryId: map['category_id'].toString(),
       amount: double.parse(map['amount'].toString()),
       note: map['note'],
       date: DateTime.parse(map['date']),
@@ -43,9 +43,9 @@ class Spending {
 
   factory Spending.fromJson(Map<String, dynamic> json) {
     return Spending(
-      id: json['id'] as String,
-      userId: json['userid'] as String,
-      categoryId: json['category_id'] as String,
+      id: json['id'].toString(),
+      userId: json['userid'].toString(),
+      categoryId: json['category_id'].toString(),
       amount: (json['amount'] as num).toDouble(),
       note: json['note'],
       date: DateTime.parse(json['date']),

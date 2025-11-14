@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:moneyboys/Modules/Home/View/total_expense_page.dart';
+import 'package:moneyboys/Modules/Home/View/total_income_page.dart';
+import 'package:moneyboys/Modules/expense/edit_spending_page.dart';
+import 'package:moneyboys/data/Models/category.dart';
+import 'package:moneyboys/data/Models/spending.dart';
+import 'package:moneyboys/data/services/category_service.dart';
+import 'package:moneyboys/data/services/spending_service.dart';
+import 'package:moneyboys/data/services/user_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,31 +18,55 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isLoading = false;
+  List<Spending> spendings = [];
+  Map<String, Category> categoryMap = {};
+  static String? userId;
+  bool isLoading = true;
 
-  // Dữ liệu demo (hiển thị giao diện thôi)
-  final List<Map<String, dynamic>> spendings = [
-    {
-      'icon': '🍔',
-      'name': 'Ăn uống',
-      'date': DateTime.now(),
-      'note': 'Bữa trưa',
-      'amount': 50000,
-      'isIncome': false,
-    },
-    {
-      'icon': '💼',
-      'name': 'Lương',
-      'date': DateTime.now().subtract(const Duration(days: 1)),
-      'note': 'Lương tháng 11',
-      'amount': 10000000,
-      'isIncome': true,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadSpendings();
+  }
+
+  Future<void> _loadSpendings() async {
+    setState(() => isLoading = true);
+    userId = await UserPreferences().getUserId();
+    final spendingList = await SpendingService().getSpendings(userId!);
+    final categories = await CategoryService().getAllCategories(userId!);
+    final catMap = {for (var cat in categories) cat.id: cat};
+
+    setState(() {
+      spendings = spendingList;
+      categoryMap = catMap;
+      isLoading = false;
+    });
+  }
+
+  void _deleteSpending(String id) async {
+    await SpendingService().deleteSpending(id);
+    await _loadSpendings();
+  }
+
+  void _navigateToEdit(Spending spending) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => EditSpendingPage(spending: spending)),
+    );
+    await _loadSpendings();
+  }
 
   Widget _buildTopCards() {
-    double totalIncome = 10000000;
-    double totalExpense = 50000;
+    double totalIncome = 0;
+    double totalExpense = 0;
+
+    for (var s in spendings) {
+      if (categoryMap[s.categoryId]?.type == 'income') {
+        totalIncome += s.amount;
+      } else {
+        totalExpense += s.amount;
+      }
+    }
 
     return Column(
       children: [
@@ -55,7 +87,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 90,
                 "Tổng thu nhập",
                 Colors.white,
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TotalIncomePage()),
+                  );
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -65,7 +102,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 90,
                 "Tổng chi tiêu",
                 const Color(0xFF0040FF),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TotalExpensePage()),
+                  );
+                },
               ),
             ),
           ],
@@ -129,7 +171,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     final isBlue = color == const Color(0xFF0040FF);
     final formatter = NumberFormat("#,###", "en_US");
-    final textAmount = formatter.format(amount);
+    String? textamount = formatter.format(amount);
+    if (textamount == '0') textamount = null;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -156,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              textAmount,
+              textamount ?? '',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -176,9 +219,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSpendingItem(Map<String, dynamic> s) {
+  Widget _buildSpendingItem(Spending s) {
+    final category = categoryMap[s.categoryId];
     final formatter = NumberFormat("#,###", "en_US");
-    final isIncome = s['isIncome'] as bool;
+    if (category == null) return const SizedBox.shrink();
+    final isIncome = category.type == 'income';
+
     return Slidable(
       endActionPane: ActionPane(
         motion: const DrawerMotion(),
@@ -186,8 +232,10 @@ class _HomeScreenState extends State<HomeScreen> {
           SlidableAction(
             icon: Icons.delete,
             backgroundColor: Colors.red,
+            spacing: 4.0,
+            flex: 1,
             label: 'Xóa',
-            onPressed: (ctx) {},
+            onPressed: (ctx) => _deleteSpending(s.id),
           ),
         ],
       ),
@@ -206,11 +254,14 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-              child: Text(s['icon'], style: const TextStyle(fontSize: 20)),
+              child: Text(
+                category.icon ?? "❓",
+                style: const TextStyle(fontSize: 20),
+              ),
             ),
           ),
           title: Text(
-            s['name'],
+            category.name,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -221,23 +272,23 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                DateFormat('dd MMM yyyy').format(s['date']),
+                DateFormat('dd MMM yyyy').format(s.date),
                 style: TextStyle(color: Colors.grey[600]),
               ),
               Text(
-                s['note'] ?? '',
+                s.note ?? '',
                 style: TextStyle(fontSize: 12, color: Colors.grey[500]),
               ),
             ],
           ),
           trailing: Text(
-            "${isIncome ? '+' : '-'}\$${formatter.format(s['amount'])}",
+            "${isIncome ? '+' : '-'}\$${formatter.format(s.amount)}",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: isIncome ? Colors.green : Colors.red[500],
             ),
           ),
-          onTap: () {},
+          onTap: () => _navigateToEdit(s),
         ),
       ),
     );
@@ -250,39 +301,47 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            return ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              children: [
-                Center(
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 430),
-                    child: isLoading
-                        ? const Center(
-                            child: CircularProgressIndicator(
-                              color: Color(0xFF0040FF),
-                            ),
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildTopCards(),
-                              const SizedBox(height: 24),
-                              const Text(
-                                "Các giao dịch gần đây",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF111111),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              ...spendings.map(_buildSpendingItem),
-                              const SizedBox(height: 100),
-                            ],
-                          ),
-                  ),
+            return RefreshIndicator(
+              onRefresh: _loadSpendings,
+              color: const Color(0xFF0040FF),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
                 ),
-              ],
+                children: [
+                  Center(
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 430),
+                      child: isLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: Color(0xFF0040FF),
+                              ),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildTopCards(),
+                                const SizedBox(height: 24),
+                                const Text(
+                                  "Các giao dịch gần đây",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF111111),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ...spendings.map(_buildSpendingItem),
+                                const SizedBox(height: 100),
+                              ],
+                            ),
+                    ),
+                  ),
+                ],
+              ),
             );
           },
         ),
