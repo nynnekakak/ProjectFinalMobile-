@@ -5,7 +5,6 @@ import 'package:moneyboys/Modules/SignUp/Cubit/signup_cubit.dart';
 import 'package:moneyboys/Modules/SignUp/Cubit/signup_state.dart';
 import 'package:moneyboys/Shared/widgets/custom_scaffold.dart';
 import 'package:moneyboys/app/config/route-path.dart';
-import 'package:moneyboys/data/services/auth_service.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -56,20 +55,6 @@ class _SignUpViewState extends State<SignUpView> {
       name: name,
       agreeToTerms: _agreePersonalData,
     );
-  }
-
-  Future<void> _handleGoogleSignIn() async {
-    final user = await AuthService.signInWithGoogle();
-    if (user != null) {
-      Navigator.pushReplacementNamed(context, RoutePath.home);
-    }
-  }
-
-  Future<void> _handleFacebookSignIn() async {
-    final user = await AuthService.signInWithFacebook();
-    if (user != null) {
-      Navigator.pushReplacementNamed(context, RoutePath.home);
-    }
   }
 
   @override
@@ -241,46 +226,6 @@ class _SignUpViewState extends State<SignUpView> {
                         ),
                       );
                     },
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Divider
-                  Row(
-                    children: const [
-                      Expanded(child: Divider(color: Colors.white24)),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          'or sign up with',
-                          style: TextStyle(color: Colors.white54),
-                        ),
-                      ),
-                      Expanded(child: Divider(color: Colors.white24)),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Social Icons with Firebase Auth
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.facebook,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                        onPressed: _handleFacebookSignIn,
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.g_mobiledata,
-                          color: Colors.white,
-                          size: 36,
-                        ),
-                        onPressed: _handleGoogleSignIn,
-                      ),
-                    ],
                   ),
                   const SizedBox(height: 25),
 
