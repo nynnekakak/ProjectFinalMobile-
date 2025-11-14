@@ -44,3 +44,32 @@ class Budget {
     };
   }
 }
+
+class BudgetInsert {
+  final int userId;
+  final int categoryId;
+  final double amount;
+  final DateTime startDate;
+  final DateTime endDate;
+  final DateTime createdAt;
+
+  BudgetInsert({
+    required this.userId,
+    required this.categoryId,
+    required this.amount,
+    required this.startDate,
+    required this.endDate,
+    required this.createdAt,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'userid': userId,
+      'category_id': categoryId,
+      'amount': amount,
+      'start_date': startDate.toIso8601String(),
+      'end_date': endDate.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
+    };
+  }
+}

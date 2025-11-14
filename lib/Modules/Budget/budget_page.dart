@@ -524,7 +524,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
     NumberFormat formatter,
     Color primaryColor,
   ) {
-    String id = item['budget_id'];
+    String id = item['budget_id'].toString();
     final budget = item['budget'];
     final category = item['category'];
     final spent = item['amount'] as double;

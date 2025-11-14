@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../../data/Models/category.dart';
@@ -52,11 +53,12 @@ class _AddSpendingPageState extends State<AddSpendingPage> {
     userId = await UserPreferences().getUserId();
     if (userId == null) return;
 
+    final cleanAmount = _amountController.text.replaceAll('.', '');
     final newSpending = Spending(
       id: '',
       userId: userId!,
       categoryId: _selectedCategory!.id,
-      amount: double.parse(_amountController.text),
+      amount: double.parse(cleanAmount),
       note: _noteController.text,
       date: _selectedDate,
       createdAt: DateTime.now(),
@@ -203,6 +205,10 @@ class _AddSpendingPageState extends State<AddSpendingPage> {
         controller: _amountController,
         keyboardType: TextInputType.number,
         style: const TextStyle(color: Color(0xFF111111)),
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          _ThousandsSeparatorInputFormatter(),
+        ],
         decoration: InputDecoration(
           labelText: 'Số tiền',
           labelStyle: TextStyle(color: primaryBlue),
@@ -214,7 +220,8 @@ class _AddSpendingPageState extends State<AddSpendingPage> {
           if (value == null || value.isEmpty) {
             return 'Nhập số tiền';
           }
-          final number = double.tryParse(value);
+          final cleanValue = value.replaceAll('.', '');
+          final number = double.tryParse(cleanValue);
           if (number == null) {
             return 'Số tiền không hợp lệ';
           }
@@ -308,6 +315,31 @@ class _AddSpendingPageState extends State<AddSpendingPage> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
+    );
+  }
+}
+
+class _ThousandsSeparatorInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    final number = int.tryParse(newValue.text.replaceAll('.', ''));
+    if (number == null) {
+      return oldValue;
+    }
+
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    final newText = formatter.format(number).replaceAll(',', '.');
+
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
     );
   }
 }

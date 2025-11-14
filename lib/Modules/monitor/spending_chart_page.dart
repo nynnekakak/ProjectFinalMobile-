@@ -70,6 +70,7 @@ class _SpendingChartPageState extends State<SpendingChartPage> {
       }
     }
 
+    if (!mounted) return;
     setState(() {
       _expenseData = expenseMap;
       _incomeData = incomeMap;
@@ -267,6 +268,7 @@ class _SpendingChartPageState extends State<SpendingChartPage> {
                 _viewMode == ViewMode.monthly,
               ],
               onPressed: (index) {
+                if (!mounted) return;
                 setState(() {
                   _viewMode = index == 0 ? ViewMode.weekly : ViewMode.monthly;
                   _currentPageIndex = 0;
@@ -440,6 +442,7 @@ class _SpendingChartPageState extends State<SpendingChartPage> {
                               controller: _pageController,
                               itemCount: _totalPages,
                               onPageChanged: (index) {
+                                if (!mounted) return;
                                 setState(() {
                                   _currentPageIndex = index;
                                 });

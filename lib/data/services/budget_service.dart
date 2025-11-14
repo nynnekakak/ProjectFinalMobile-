@@ -18,7 +18,7 @@ class BudgetService {
     return (response as List).map((e) => Budget.fromMap(e)).toList();
   }
 
-  Future<void> addBudget(Budget budget) async {
+  Future<void> addBudget(BudgetInsert budget) async {
     await _supabase.from('budget').insert(budget.toMap());
   }
 
