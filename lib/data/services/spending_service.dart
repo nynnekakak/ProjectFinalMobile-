@@ -7,13 +7,31 @@ class SpendingService {
   final _table = 'spending';
 
   Future<List<Spending>> getSpendings(String userId) async {
-    final response = await _supabase
-        .from(_table)
-        .select()
-        .eq('userid', userId)
-        .order('created_at', ascending: false);
+    try {
+      final response = await _supabase
+          .from(_table)
+          .select()
+          .eq('userid', userId)
+          .order('created_at', ascending: false);
 
-    return (response as List).map((e) => Spending.fromMap(e)).toList();
+      return (response as List).map((e) => Spending.fromMap(e)).toList();
+    } catch (e) {
+      // Retry once after a short delay
+      await Future.delayed(const Duration(seconds: 1));
+      try {
+        final response = await _supabase
+            .from(_table)
+            .select()
+            .eq('userid', userId)
+            .order('created_at', ascending: false);
+
+        return (response as List).map((e) => Spending.fromMap(e)).toList();
+      } catch (e) {
+        // If still fails, return empty list instead of crashing
+        print('Error loading spendings: $e');
+        return [];
+      }
+    }
   }
 
   Future<List<Spending>> getSpendingsInRange(
@@ -21,24 +39,29 @@ class SpendingService {
     DateTime end,
     String type,
   ) async {
-    final userId = await UserPreferences().getUserId();
+    try {
+      final userId = await UserPreferences().getUserId();
 
-    // Get all spendings first, then filter by category type separately
-    final response = await _supabase
-        .from('spending')
-        .select('*')
-        .eq('userid', userId!)
-        .gte('date', start.toIso8601String())
-        .lte('date', end.toIso8601String())
-        .order('date', ascending: false);
+      // Get all spendings first, then filter by category type separately
+      final response = await _supabase
+          .from('spending')
+          .select('*')
+          .eq('userid', userId!)
+          .gte('date', start.toIso8601String())
+          .lte('date', end.toIso8601String())
+          .order('date', ascending: false);
 
-    final data = response as List;
-    final spendings = data.map((e) => Spending.fromMap(e)).toList();
+      final data = response as List;
+      final spendings = data.map((e) => Spending.fromMap(e)).toList();
 
-    // Filter by category type by fetching categories separately
-    // Note: This is less efficient but avoids join issues
-    // TODO: Consider using RPC function for better performance
-    return spendings;
+      // Filter by category type by fetching categories separately
+      // Note: This is less efficient but avoids join issues
+      // TODO: Consider using RPC function for better performance
+      return spendings;
+    } catch (e) {
+      print('Error loading spendings in range: $e');
+      return [];
+    }
   }
 
   Future<void> addSpending(Spending spending) async {

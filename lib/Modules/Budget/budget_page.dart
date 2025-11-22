@@ -4,6 +4,11 @@ import 'package:moneyboys/Modules/Budget/View/add_budget_page.dart';
 import 'package:moneyboys/data/services/user_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'View/budget_details_page.dart';
+import 'package:moneyboys/data/services/gemini_service.dart';
+import 'package:moneyboys/data/services/budget_service.dart';
+import 'package:moneyboys/data/services/spending_service.dart';
+import 'package:moneyboys/data/services/category_service.dart';
+import 'package:moneyboys/Shared/widgets/ai_assistant_widget.dart';
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
@@ -16,6 +21,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
   List<Map<String, dynamic>> _budgetList = [];
   bool _isLoading = true;
   String? userId;
+  final GeminiService _geminiService = GeminiService();
 
   // Date selection variables
   String _selectedPeriod = 'Tháng này';
@@ -465,6 +471,27 @@ class _BudgetScreenState extends State<BudgetScreen> {
                 ),
               ],
             ),
+      floatingActionButton: _isLoading
+          ? null
+          : Padding(
+              padding: const EdgeInsets.only(bottom: 60),
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AIAdviceDialog(
+                      onGetAdvice: _getBudgetAIAdvice,
+                      title: 'Tư vấn ngân sách',
+                      icon: Icons.account_balance_wallet,
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.psychology),
+                label: const Text('Hỏi AI'),
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
+              ),
+            ),
     );
   }
 
@@ -656,5 +683,21 @@ class _BudgetScreenState extends State<BudgetScreen> {
         ),
       ),
     );
+  }
+
+  Future<String> _getBudgetAIAdvice() async {
+    try {
+      final budgets = await BudgetService().getBudgets();
+      final spendings = await SpendingService().getSpendings(userId!);
+      final categories = await CategoryService().getAllCategories(userId!);
+
+      return await _geminiService.analyzeSpending(
+        spendings,
+        budgets,
+        categories,
+      );
+    } catch (e) {
+      return 'Không thể kết nối với AI. Vui lòng kiểm tra API key và kết nối internet.\n\nLỗi: ${e.toString()}';
+    }
   }
 }

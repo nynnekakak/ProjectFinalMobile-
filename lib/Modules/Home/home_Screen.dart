@@ -9,6 +9,10 @@ import 'package:moneyboys/data/Models/spending.dart';
 import 'package:moneyboys/data/services/category_service.dart';
 import 'package:moneyboys/data/services/spending_service.dart';
 import 'package:moneyboys/data/services/user_preferences.dart';
+import 'package:moneyboys/data/services/gemini_service.dart';
+import 'package:moneyboys/data/services/budget_service.dart';
+import 'package:moneyboys/Shared/widgets/ai_assistant_widget.dart';
+import 'package:moneyboys/Shared/widgets/ai_chat_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, Category> categoryMap = {};
   static String? userId;
   bool isLoading = true;
+  final GeminiService _geminiService = GeminiService();
 
   @override
   void initState() {
@@ -294,6 +299,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<String> _getAIAdvice() async {
+    try {
+      final budgets = await BudgetService().getBudgets();
+      final categories = categoryMap.values.toList();
+      return await _geminiService.analyzeSpending(
+        spendings,
+        budgets,
+        categories,
+      );
+    } catch (e) {
+      return 'Không thể kết nối với AI. Vui lòng kiểm tra API key và kết nối internet.\n\nLỗi: ${e.toString()}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -346,6 +365,47 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
+      floatingActionButton: isLoading
+          ? null
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Chat button
+                FloatingActionButton(
+                  heroTag: 'chat',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AIChatPage(),
+                      ),
+                    );
+                  },
+                  backgroundColor: Colors.purple,
+                  child: const Icon(Icons.chat_bubble, color: Colors.white),
+                ),
+                const SizedBox(height: 10),
+                // Quick analysis button
+                FloatingActionButton.extended(
+                  heroTag: 'analysis',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AIAdviceDialog(
+                        onGetAdvice: _getAIAdvice,
+                        title: 'Phân tích tài chính',
+                        icon: Icons.analytics,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.psychology),
+                  label: const Text('Phân tích'),
+                  backgroundColor: Colors.purple,
+                  foregroundColor: Colors.white,
+                ),
+                const SizedBox(height: 60),
+              ],
+            ),
     );
   }
 }

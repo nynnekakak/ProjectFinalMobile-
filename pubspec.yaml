@@ -33,6 +33,9 @@ dependencies:
   # Storage & Backend
   shared_preferences: ^2.2.1
   supabase_flutter: ^2.5.10
+  
+  # AI Integration
+  google_generative_ai: ^0.4.0
 
 dev_dependencies:
   flutter_test:

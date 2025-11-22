@@ -8,9 +8,11 @@ An Android application developed using **Java** and **Android Studio** that help
 
 - ✅ Add, edit, and delete expenses  
 - 📊 View expenses by category and date  
-- 💾 Offline data storage using **SQLite Database**  
-- 📈 Summary of total spending  
+- 💾 Cloud data storage using **Supabase**  
+- 📈 Summary of total spending with charts
+- 💰 Budget management and tracking
 - 🔍 Search and filter transactions  
+- 🤖 **AI-powered financial advisor** using **Google Gemini AI**
 - 🧭 Simple and user-friendly interface  
 
 ---
@@ -28,11 +30,12 @@ An Android application developed using **Java** and **Android Studio** that help
 
 | Component | Technology |
 |------------|-------------|
-| **Language** | Java |
-| **IDE** | Android Studio |
-| **Database** | SQLite |
-| **Architecture** | MVC|
-| **UI Design** | XML Layouts |
+| **Framework** | Flutter (Dart) |
+| **IDE** | VS Code / Android Studio |
+| **Database** | Supabase (PostgreSQL) |
+| **AI Integration** | Google Gemini AI |
+| **State Management** | Flutter BLoC |
+| **Charts** | FL Chart |
 | **Version Control** | Git & GitHub |
 
 ---
@@ -48,13 +51,22 @@ An Android application developed using **Java** and **Android Studio** that help
 
 ---
 
+## 🤖 AI Features (NEW!)
+
+- 📊 **Smart Financial Analysis**: AI analyzes your spending patterns and provides personalized advice
+- 💰 **Budget Recommendations**: Get AI-powered suggestions to optimize your budget
+- 📈 **Trend Analysis**: Understand your spending trends over time with AI insights
+- 💡 **Saving Tips**: Receive practical tips tailored to your spending habits
+
+**Setup Guide**: See [GEMINI_AI_SETUP.md](GEMINI_AI_SETUP.md) for detailed instructions
+
 ## 🚀 Future Enhancements
 
-- ☁️ Integrate **Firebase** for cloud sync and authentication  
 - 🔐 Implement **data encryption** for security  
-- 📈 Add **expense charts and statistics**  
-- 💡 AI-based spending suggestions  
-- 🌙 Dark mode for better UX  
+- 🌙 Dark mode for better UX
+- 🔔 Budget alerts and notifications
+- 📱 Widget support for quick expense entry
+- 🌍 Multi-language support  
 
 ---
 

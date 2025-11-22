@@ -4,6 +4,9 @@ import 'package:moneyboys/data/services/category_service.dart';
 import 'package:moneyboys/data/services/user_preferences.dart';
 import 'package:intl/intl.dart';
 import '../../data/services/spending_service.dart';
+import 'package:moneyboys/data/services/gemini_service.dart';
+import 'package:moneyboys/data/services/budget_service.dart';
+import 'package:moneyboys/Shared/widgets/ai_assistant_widget.dart';
 
 enum SpendingType { expense, income }
 
@@ -20,6 +23,7 @@ class _SpendingChartPageState extends State<SpendingChartPage> {
   final SpendingService spendingService = SpendingService();
   final CategoryService _categoryService = CategoryService();
   final PageController _pageController = PageController();
+  final GeminiService _geminiService = GeminiService();
 
   Map<String, double> _expenseData = {};
   Map<String, double> _incomeData = {};
@@ -492,6 +496,25 @@ class _SpendingChartPageState extends State<SpendingChartPage> {
           ],
         ),
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 60),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => AIAdviceDialog(
+                onGetAdvice: _getChartAIAdvice,
+                title: 'Phân tích xu hướng',
+                icon: Icons.trending_up,
+              ),
+            );
+          },
+          icon: const Icon(Icons.psychology),
+          label: const Text('Hỏi AI'),
+          backgroundColor: Colors.purple,
+          foregroundColor: Colors.white,
+        ),
+      ),
     );
   }
 
@@ -815,4 +838,25 @@ class DashedLinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+extension on _SpendingChartPageState {
+  Future<String> _getChartAIAdvice() async {
+    try {
+      final userId = await UserPreferences().getUserId();
+      if (userId == null) {
+        return 'Không thể lấy thông tin người dùng.';
+      }
+
+      final spendings = await spendingService.getSpendings(userId);
+      final categories = await _categoryService.getAllCategories(userId);
+
+      // Lấy số ngày dựa vào chế độ xem
+      final days = _viewMode == ViewMode.weekly ? 7 : 30;
+
+      return await _geminiService.analyzeTrends(spendings, categories, days);
+    } catch (e) {
+      return 'Không thể kết nối với AI. Vui lòng kiểm tra API key và kết nối internet.\n\nLỗi: ${e.toString()}';
+    }
+  }
 }
