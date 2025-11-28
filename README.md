@@ -8,9 +8,11 @@ An Android application developed using **Java** and **Android Studio** that help
 
 - ✅ Add, edit, and delete expenses  
 - 📊 View expenses by category and date  
-- 💾 Offline data storage using **SQLite Database**  
-- 📈 Summary of total spending  
+- 💾 Cloud data storage using **Supabase**  
+- 📈 Summary of total spending with charts
+- 💰 Budget management and tracking
 - 🔍 Search and filter transactions  
+- 🤖 **AI-powered financial advisor** using **Google Gemini AI**
 - 🧭 Simple and user-friendly interface  
 
 ---
@@ -28,11 +30,12 @@ An Android application developed using **Java** and **Android Studio** that help
 
 | Component | Technology |
 |------------|-------------|
-| **Language** | Java |
-| **IDE** | Android Studio |
-| **Database** | SuperBase |
-| **Architecture** | MVC|
-| **UI Design** | XML Layouts |
+| **Framework** | Flutter (Dart) |
+| **IDE** | VS Code / Android Studio |
+| **Database** | Supabase (PostgreSQL) |
+| **AI Integration** | Google Gemini AI |
+| **State Management** | Flutter BLoC |
+| **Charts** | FL Chart |
 | **Version Control** | Git & GitHub |
 
 ---
@@ -48,13 +51,22 @@ An Android application developed using **Java** and **Android Studio** that help
 
 ---
 
+## 🤖 AI Features (NEW!)
+
+- 📊 **Smart Financial Analysis**: AI analyzes your spending patterns and provides personalized advice
+- 💰 **Budget Recommendations**: Get AI-powered suggestions to optimize your budget
+- 📈 **Trend Analysis**: Understand your spending trends over time with AI insights
+- 💡 **Saving Tips**: Receive practical tips tailored to your spending habits
+
+**Setup Guide**: See [GEMINI_AI_SETUP.md](GEMINI_AI_SETUP.md) for detailed instructions
+
 ## 🚀 Future Enhancements
 
-- ☁️ Integrate **Firebase** for cloud sync and authentication  
 - 🔐 Implement **data encryption** for security  
-- 📈 Add **expense charts and statistics**  
-- 💡 AI-based spending suggestions  
-- 🌙 Dark mode for better UX  
+- 🌙 Dark mode for better UX
+- 🔔 Budget alerts and notifications
+- 📱 Widget support for quick expense entry
+- 🌍 Multi-language support  
 
 ---
 
@@ -63,9 +75,9 @@ An Android application developed using **Java** and **Android Studio** that help
 | Name | Role | Responsibility |
 |------|------|----------------|
 | [Trần Đăng Bảo Khương] | Team Leader / Developer | Overall project management, main coding |
-| [Trần Ngọc Tiến] | Backend / Database | Superbase, CRUD operations |
+| [Trần Ngọc Tiến] | Backend / Database | SQLite, CRUD operations |
 | [Trần Bảo Minh] | UI/UX Designer | Layouts, icons, user interface |
-| [Lê Trần Tuấn Hùng] | Tester / Documentation | Testing, Superbase |
+| [Lê Trần Tuấn Hùng] | Tester / Documentation | Testing, report writing |
 
 ---
 
@@ -74,34 +86,3 @@ An Android application developed using **Java** and **Android Studio** that help
 1. Clone this repository:
    ```bash
    git clone https://github.com/nynnekakak/ProjectFinalMobile-.git
-
-## Java 21 (developer setup)
-
-This project has been updated to target Java 21 for the Android build (compileOptions and Kotlin `jvmTarget`). To build locally you should have a Java 21 JDK installed and configured.
-
-Recommended steps (Windows / PowerShell):
-
-1. Install a Java 21 JDK (Eclipse Adoptium / Temurin, Oracle, or other distribution).
-2. Set JAVA_HOME for your user or session. Example (PowerShell session):
-
-```powershell
-$env:JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21'
-``` 
-
-To persist for your user, run as admin or use PowerShell to set a User environment variable:
-
-```powershell
-[Environment]::SetEnvironmentVariable('JAVA_HOME','C:\\Program Files\\Java\\jdk-21','User')
-``` 
-
-3. (Optional) If you prefer a project-specific JDK, uncomment and set `org.gradle.java.home` in `android/gradle.properties` to the absolute JDK path.
-
-Notes:
-- If your Gradle or Kotlin plugin versions do not support Java 21 bytecode target, you may need to upgrade Gradle/AGP/Kotlin first or use a supported compatibility level.
-- After installing Java 21 and setting `JAVA_HOME`, run the Android build from the project root using the Gradle wrapper:
-
-```powershell
-.\android\gradlew.bat assembleDebug
-```
-
-If you run into build errors after switching to Java 21, paste the build output here and I can help troubleshoot.

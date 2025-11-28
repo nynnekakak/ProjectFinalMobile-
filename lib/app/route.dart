@@ -15,12 +15,15 @@ class Routes extends StatefulWidget {
 
 class RoutesState extends State<Routes> {
   int _currentIndex = 0;
+  Key _homeScreenKey = UniqueKey();
+  Key _budgetScreenKey = UniqueKey();
+  Key _chartScreenKey = UniqueKey();
 
-  final List<Widget> _pages = const [
-    HomeScreen(),
-    BudgetScreen(),
-    SpendingChartPage(),
-    SettingPage(),
+  List<Widget> get _pages => [
+    HomeScreen(key: _homeScreenKey),
+    BudgetScreen(key: _budgetScreenKey),
+    SpendingChartPage(key: _chartScreenKey),
+    const SettingPage(),
   ];
 
   Widget? subPage;
@@ -99,11 +102,19 @@ class RoutesState extends State<Routes> {
       floatingActionButton: Transform.translate(
         offset: const Offset(0, 10),
         child: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
+          onPressed: () async {
+            final result = await Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const AddSpendingPage()),
             );
+            // Refresh all screens if spending was added
+            if (result == true) {
+              setState(() {
+                _homeScreenKey = UniqueKey(); // Force HomeScreen to rebuild
+                _budgetScreenKey = UniqueKey(); // Force BudgetScreen to rebuild
+                _chartScreenKey = UniqueKey(); // Force ChartScreen to rebuild
+              });
+            }
           },
           backgroundColor: const Color.fromARGB(255, 62, 54, 226),
           elevation: 8,

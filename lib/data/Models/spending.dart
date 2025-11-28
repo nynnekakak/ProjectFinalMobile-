@@ -30,10 +30,13 @@ class Spending {
   }
 
   Map<String, dynamic> toMap() {
+    // Parse categoryId to int if database uses integer type
+    final categoryIdValue = int.tryParse(categoryId.toString()) ?? categoryId;
+
     return {
       if (id.isNotEmpty) 'id': id,
       'userid': userId,
-      'category_id': categoryId,
+      'category_id': categoryIdValue,
       'amount': amount,
       'note': note,
       'date': date.toIso8601String(),
@@ -54,10 +57,13 @@ class Spending {
   }
 
   Map<String, dynamic> toJson() {
+    // Parse categoryId to int if database uses integer type
+    final categoryIdValue = int.tryParse(categoryId.toString()) ?? categoryId;
+
     return {
       'id': id,
       'userid': userId,
-      'category_id': categoryId,
+      'category_id': categoryIdValue,
       'amount': amount,
       'note': note,
       'date': date.toIso8601String(),

@@ -93,8 +93,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
     final uuid = const Uuid().v4();
     final userId = await UserPreferences().getUserId();
 
-    Category newCategory = Category(
-      id: uuid,
+    CategoryInsert newCategory = CategoryInsert(
       name: _nameController.text,
       type: _type,
       icon: _iconController.text,

@@ -11,14 +11,14 @@ class BudgetService {
 
     final response = await _supabase
         .from('budget')
-        .select('*, category(*)')
+        .select('*')
         .eq('userid', userId!)
         .order('start_date');
 
     return (response as List).map((e) => Budget.fromMap(e)).toList();
   }
 
-  Future<void> addBudget(Budget budget) async {
+  Future<void> addBudget(BudgetInsert budget) async {
     await _supabase.from('budget').insert(budget.toMap());
   }
 
