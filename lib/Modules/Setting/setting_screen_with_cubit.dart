@@ -58,23 +58,23 @@ class _SettingViewState extends State<SettingView> {
               const SnackBar(content: Text('Profile updated successfully')),
             );
           } else if (state is SettingProfileUpdateError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           } else if (state is SettingPasswordChanged) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Password changed successfully')),
             );
           } else if (state is SettingPasswordChangeError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           } else if (state is SettingLoggedOut) {
             Navigator.of(context).pop();
           } else if (state is SettingLogoutError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
         child: RefreshIndicator(
@@ -171,10 +171,7 @@ class _SettingViewState extends State<SettingView> {
     );
   }
 
-  Widget _buildPersonalInfoSection(
-    BuildContext context,
-    SettingLoaded state,
-  ) {
+  Widget _buildPersonalInfoSection(BuildContext context, SettingLoaded state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -217,17 +214,15 @@ class _SettingViewState extends State<SettingView> {
                           ? null
                           : () {
                               context.read<SettingCubit>().updateUserProfile(
-                                    name: _nameController.text,
-                                    email: _emailController.text,
-                                  );
+                                name: _nameController.text,
+                                email: _emailController.text,
+                              );
                             },
                       icon: isUpdating
                           ? const SizedBox(
                               height: 20,
                               width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.save),
                       label: Text(isUpdating ? 'Updating...' : 'Save Changes'),
@@ -386,11 +381,12 @@ class _SettingViewState extends State<SettingView> {
           ),
           TextButton(
             onPressed: () {
-              if (newPasswordController.text == confirmPasswordController.text) {
+              if (newPasswordController.text ==
+                  confirmPasswordController.text) {
                 context.read<SettingCubit>().changePassword(
-                      currentPassword: oldPasswordController.text,
-                      newPassword: newPasswordController.text,
-                    );
+                  currentPassword: oldPasswordController.text,
+                  newPassword: newPasswordController.text,
+                );
                 Navigator.pop(context);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
