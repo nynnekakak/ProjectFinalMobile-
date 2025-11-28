@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:moneyboys/Modules/Setting/Cubit/account_cubit.dart';
-import 'package:moneyboys/Modules/Setting/Cubit/account_state.dart';
 import 'package:moneyboys/Modules/Setting/View/PersonalProfile.dart';
 import 'package:moneyboys/Modules/Setting/widget/Custom_Manager.dart';
 import 'package:moneyboys/Modules/SignIn/View/Signin_screen.dart';
 import 'package:moneyboys/app/route.dart';
 import 'package:moneyboys/data/Models/user.dart';
+import 'package:moneyboys/data/services/user_preferences.dart';
+import 'package:moneyboys/data/services/user_service.dart';
 
 import 'ChangePassword.dart';
 
-class AccountManager extends StatelessWidget {
+class AccountManager extends StatefulWidget {
   const AccountManager({super.key});
 
+  @override
+  State<AccountManager> createState() => _AccountManagerState();
+}
+
+class _AccountManagerState extends State<AccountManager> {
+  String? userId;
+  UserModel? user;
   static const BoxDecoration commonBoxDecoration = BoxDecoration(
     color: Color.fromARGB(255, 255, 255, 255),
     borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -29,150 +35,128 @@ class AccountManager extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AccountCubit()..loadUser(),
-      child: const AccountManagerView(),
-    );
+  void initState() {
+    super.initState();
+    _loadUser();
   }
-}
 
-class AccountManagerView extends StatelessWidget {
-  const AccountManagerView({super.key});
+  Future<void> _loadUser() async {
+    userId = await UserPreferences().getUserId();
+    if (userId == null) return;
 
-  @override
+    final fetchedUser = await UserService().getUserById(userId!);
+    if (fetchedUser == null) return;
+
+    setState(() {
+      user = fetchedUser;
+    });
+  }
+
   Widget build(BuildContext context) {
-    return BlocListener<AccountCubit, AccountState>(
-      listener: (context, state) {
-        if (state is AccountLoggedOut) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const SignInScreen()),
-          );
-        } else if (state is AccountDeleted) {
-          final commonState = context.findAncestorStateOfType<RoutesState>();
-          commonState?.setState(() {
-            commonState.subPage = const SignInScreen();
-          });
-        } else if (state is AccountError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
-        }
-      },
-      child: CustomScaffoldManager(
-        title: 'Quản lý tài khoản',
-        child: SafeArea(
-          child: BlocBuilder<AccountCubit, AccountState>(
-            builder: (context, state) {
-              if (state is AccountLoading || state is AccountInitial) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state is AccountError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Lỗi: ${state.message}'),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<AccountCubit>().loadUser();
-                        },
-                        child: const Text('Thử lại'),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              if (state is! AccountLoaded) {
-                return const Center(child: Text('Không có dữ liệu'));
-              }
-
-              final user = state.user;
-
-              return SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.fromLTRB(8.0, 32.0, 8.0, 10.0),
-                  width: double.infinity,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildProfileSection(context, user),
-                      const SizedBox(height: 28),
-                      _buildActionTile(
-                        context: context,
-                        title: 'Thay đổi mật khẩu',
-                        color: Colors.blueAccent,
-                        onTap: () {
-                          final commonState = context
-                              .findAncestorStateOfType<RoutesState>();
-                          commonState?.setState(() {
-                            commonState.previousSubPage = commonState.subPage;
-                            commonState.subPage = const Changepassword();
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 28),
-                      _buildActionTile(
-                        context: context,
-                        title: 'Đăng xuất',
-                        color: Colors.redAccent,
-                        fontWeight: FontWeight.bold,
-                        onTap: () {
-                          context.read<AccountCubit>().logout();
-                        },
-                      ),
-                      const SizedBox(height: 28),
-                      _buildActionTile(
-                        context: context,
-                        title: 'Xóa tài khoản',
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                        onTap: () => _showDeleteConfirmation(context),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
+    return CustomScaffoldManager(
+      title: 'Quản lý tài khoản',
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.fromLTRB(8.0, 32.0, 8.0, 10.0),
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileSection(),
+                const SizedBox(height: 28),
+                _buildActionTile(
+                  title: 'Thay đổi mật khẩu',
+                  color: Colors.blueAccent,
+                  onTap: () {
+                    final commonState = context
+                        .findAncestorStateOfType<RoutesState>();
+                    commonState?.setState(() {
+                      commonState.previousSubPage = commonState.subPage;
+                      commonState.subPage = const Changepassword();
+                    });
+                  },
                 ),
-              );
-            },
+                const SizedBox(height: 28),
+                _buildActionTile(
+                  title: 'Đăng xuất',
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                  onTap: () async {
+                    await UserPreferences().removeUserId(); // Xóa userId đã lưu
+                    // final commonState =
+                    //     context.findAncestorStateOfType<CommonPageState>();
+                    // commonState?.setState(() {
+                    //   commonState.subPage =
+                    //       const SignInScreen(); // Chuyển về trang đăng nhập
+                    // });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignInScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 28),
+                _buildActionTile(
+                  title: 'Xóa tài khoản',
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                  onTap: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Xác nhận'),
+                        content: const Text(
+                          'Bạn có chắc muốn xóa tài khoản không?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Không'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text('Có'),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true && userId != null) {
+                      UserService().deleteUser(userId!);
+
+                      await UserPreferences().removeUserId(); // Xóa local
+                      final commonState = context
+                          .findAncestorStateOfType<RoutesState>();
+                      commonState?.setState(() {
+                        commonState.subPage =
+                            const SignInScreen(); // Quay về đăng nhập
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Xóa tài khoản thất bại')),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Future<void> _showDeleteConfirmation(BuildContext context) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Xác nhận'),
-        content: const Text('Bạn có chắc muốn xóa tài khoản không?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Không'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Có'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true && context.mounted) {
-      context.read<AccountCubit>().deleteAccount();
+  Widget _buildProfileSection() {
+    if (user == null) {
+      return const Center(child: CircularProgressIndicator());
     }
-  }
-
-  Widget _buildProfileSection(BuildContext context, UserModel user) {
     return Container(
-      decoration: AccountManager.commonBoxDecoration,
+      decoration: commonBoxDecoration,
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       child: Column(
         children: [
@@ -180,16 +164,16 @@ class AccountManagerView extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildAvatar(user),
+                _buildAvatar(),
                 const SizedBox(height: 12),
                 Text(
-                  user.name ?? '',
-                  style: const TextStyle(color: Colors.black87, fontSize: 17),
+                  user!.name ?? '',
+                  style: TextStyle(color: Colors.black87, fontSize: 17),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  user.email,
-                  style: const TextStyle(color: Colors.black45, fontSize: 14),
+                  user!.email,
+                  style: TextStyle(color: Colors.black45, fontSize: 14),
                 ),
                 const SizedBox(height: 12),
                 Brand(Brands.google, size: 22),
@@ -215,18 +199,18 @@ class AccountManagerView extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(UserModel user) {
+  Widget _buildAvatar() {
+    if (user == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Stack(
       alignment: Alignment.bottomCenter,
       clipBehavior: Clip.none,
       children: [
-        CircleAvatar(
+        const CircleAvatar(
           radius: 38,
           backgroundColor: const Color(0xFF42A5F5),
-          child: Text(
-            user.name?.isNotEmpty == true ? user.name![0].toUpperCase() : "U",
-            style: const TextStyle(fontSize: 32, color: Colors.white),
-          ),
+          child: Text("L", style: TextStyle(fontSize: 32, color: Colors.white)),
         ),
         Positioned(
           bottom: -12,
@@ -235,11 +219,11 @@ class AccountManagerView extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
+              boxShadow: [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 4,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
