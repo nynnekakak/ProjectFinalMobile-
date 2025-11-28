@@ -1,48 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'Cubit/user_cubit.dart';
 
-//bỏ supabase, sử dụng lại thì uncomment import dưới và _loadUserInfo
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-class UserPage extends StatefulWidget {
+class UserPage extends StatelessWidget {
   const UserPage({super.key});
 
   @override
-  State<UserPage> createState() => _UserPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => UserCubit()..loadUserInfo(),
+      child: const _UserPageView(),
+    );
+  }
 }
 
-class _UserPageState extends State<UserPage> {
-  Map<String, dynamic>? _user;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserInfo();
-  }
-
-  Future<void> _loadUserInfo() async {
-    final supabase = Supabase.instance.client;
-    final userInfo = await supabase
-        .from('user')
-        .select()
-        .limit(1)
-        .maybeSingle();
-
-    setState(() => _user = userInfo);
-  }
+class _UserPageView extends StatelessWidget {
+  const _UserPageView();
 
   @override
   Widget build(BuildContext context) {
-    if (_user == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    return BlocBuilder<UserCubit, UserState>(
+      builder: (context, state) {
+        if (state is UserLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is UserLoaded) {
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text(
+                'Tên: ${state.name ?? 'N/A'}',
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Email: ${state.email ?? 'N/A'}',
+                style: const TextStyle(fontSize: 16),
+              ),
+              if (state.createdAt != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Ngày tạo: ${state.createdAt}',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => context.read<UserCubit>().refreshUserInfo(),
+                child: const Text('Làm mới'),
+              ),
+            ],
+          );
+        } else if (state is UserError) {
+          return Center(
+            child: Text(
+              'Lỗi: ${state.message}',
+              style: const TextStyle(color: Colors.red, fontSize: 16),
+            ),
+          );
+        }
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text('Tên: ${_user!['name']}', style: const TextStyle(fontSize: 18)),
-        Text('Email: ${_user!['email']}', style: const TextStyle(fontSize: 16)),
-        // các thông tin khác nếu có
-      ],
+        return const Center(child: Text('Khởi tạo...'));
+      },
     );
   }
 }
