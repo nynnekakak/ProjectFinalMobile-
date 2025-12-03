@@ -372,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 // Chat button
                 FloatingActionButton(
-                  heroTag: 'chat',
+                  heroTag: null,
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -387,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 10),
                 // Quick analysis button
                 FloatingActionButton.extended(
-                  heroTag: 'analysis',
+                  heroTag: null,
                   onPressed: () {
                     showDialog(
                       context: context,

@@ -476,6 +476,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
           : Padding(
               padding: const EdgeInsets.only(bottom: 60),
               child: FloatingActionButton.extended(
+                heroTag: 'budget_advice',
                 onPressed: () {
                   showDialog(
                     context: context,

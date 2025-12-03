@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 class GeminiService {
   static const String _apiKey =
-      'AIzaSyB7nSIvm2vlJuBjHAvLn7CxAyyy6kb5X1g'; // Thay bằng API key của bạn
+      'AIzaSyD_fOXxxqQVBaiDgjIiZGmcHR9f4GLY4ss'; // Thay bằng API key của bạn
   late final GenerativeModel _model;
 
   GeminiService() {

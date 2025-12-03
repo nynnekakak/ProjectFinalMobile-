@@ -385,7 +385,7 @@ class HomeScreenWithCubit extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FloatingActionButton(
-              heroTag: 'chat',
+              heroTag: 'homecubit_chat',
               onPressed: () {
                 Navigator.push(
                   context,
@@ -397,7 +397,7 @@ class HomeScreenWithCubit extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             FloatingActionButton.extended(
-              heroTag: 'analysis',
+              heroTag: 'homecubit_analysis',
               onPressed: () {
                 showDialog(
                   context: context,

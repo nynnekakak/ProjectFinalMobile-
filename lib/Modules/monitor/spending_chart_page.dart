@@ -499,6 +499,7 @@ class _SpendingChartPageState extends State<SpendingChartPage> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 60),
         child: FloatingActionButton.extended(
+          heroTag: 'chart_analysis',
           onPressed: () {
             showDialog(
               context: context,

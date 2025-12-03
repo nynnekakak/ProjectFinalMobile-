@@ -102,6 +102,7 @@ class RoutesState extends State<Routes> {
       floatingActionButton: Transform.translate(
         offset: const Offset(0, 10),
         child: FloatingActionButton(
+          heroTag: 'main_add_button',
           onPressed: () async {
             final result = await Navigator.push(
               context,
